@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background: #f1f1f1;
+        }
+    </style>
+    <title>Washington Post Search</title>
+</head>
+<body>
+
+<h3>Washington Post Search</h3>
+
+<p>Your query: <strong>{{query}}</strong></p>
+
+
+
+{% if unknown %}
+    <h4>Unknown words: </h4>
+    <ul>
+    {% for word in unknown %}
+        <li>
+        {{ word }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+
+
+{% if stopwords %}
+    <h4>Ignoring term: </h4>
+    <ul>
+    {% for word in stopwords %}
+        <li>
+        {{ word }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+
+<h4>Results:</h4>
+<hr>
+<ul>
+    {% for score, doc in output %}
+    <li>
+        {{ loop.index}}:
+        <a href="{{ url_for('doc_data', doc_id=doc.id) }}"> {{ doc.title }}</a>
+        <p> Score: {{ score }} Snippet: {{ doc.content_str|truncate(truncate_length) }} </p>
+
+{#        {% if validwords %}#}
+{#            <h4>Found query terms: </h4>#}
+{#            <ul>#}
+{#            {% for word in validwords %}#}
+{#                <li>#}
+{#                {{ word }}#}
+{#                </li>#}
+{#            {% endfor %}#}
+{#            </ul>#}
+{#        {% endif %}#}
+
+    </li>
+    {% endfor %}
+</ul>
+
+<h4>Total number of hits: {{ num_hits }}</h4>
+
+<h4>Current Page: {{curr_page}}/{{max_pages}}</h4>
+<ul>
+    {% if end %}
+        <a href="{{ url_for('next_page', page_id=curr_page+1) }}" title="Click for next page"><button type="button" disabled="disabled">Next</button></a>
+    {% else %}
+        <a href="{{ url_for('next_page', page_id=curr_page+1) }}" title="Click for next page"><button type="button">Next</button></a>
+    {% endif %}
+<hr>
+</ul>
+
+
+<form action="{{ url_for('results') }}" name="search" method="post">
+    <label for="query">Query:</label>
+    <input type="text" id="query" name="query" size=50 autocomplete="on" value="{{query}}">
+    <input type="submit" value="Search">
+</form>
+
+</body>
+</html>
